@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { categories, categoryImages, collectionImages, shopHref } from "@/lib/catalog";
+import { categories, categoryImages, collectionImages, home, shopHref } from "@/lib/catalog";
 import { Logo, Arrow } from "./brand";
 import { SiteHeader, useStorefront } from "./storefront-shell";
 
@@ -54,7 +54,7 @@ export function StudioHome() {
           scrollTrigger: {
             trigger: collection.current, start: "top 92%", end: "top 16%",
             scrub: 0.85, invalidateOnRefresh: true,
-            onUpdate: (self) => setCollectionIndex(Math.min(3, Math.floor(self.progress * 4))),
+            onUpdate: (self) => setCollectionIndex(Math.min(collectionImages.length - 1, Math.floor(self.progress * collectionImages.length))),
           },
         });
 
@@ -113,10 +113,10 @@ export function StudioHome() {
     <div ref={root}>
       <main id="inicio">
         <section className="hero" aria-label="STG Studio — Collection 001">
-          <div className="hero-image"><Image src="/images/hero.webp" alt="Colagem editorial da STG Studio com recortes de jeans, texturas e acessórios" fill preload sizes="100vw" className="object-cover" /></div>
+          <div className="hero-image"><Image src={home.hero.image} alt={home.hero.alt} fill preload sizes="100vw" className="object-cover" /></div>
           <SiteHeader active="home" />
           <div className="hero-content">
-            <h1><span className="hero-line"><span>STG STUDIO™</span></span><span className="hero-line"><span>COLLECTION #001</span></span><span className="hero-line"><span>NORDESTE, BRAZIL</span></span></h1>
+            <h1>{home.hero.lines.map((line) => <span className="hero-line" key={line}><span>{line}</span></span>)}</h1>
             <button className="bracket-link hero-reveal" onClick={() => navigate("colecoes")}>[ <span>VEJA AGORA</span> ]</button>
           </div>
           <div className="hero-bottom hero-reveal"><span>JOÃO PESSOA, PB<br />07°06′ S &nbsp; 34°51′ W</span><button className="scroll-cue" onClick={() => navigate("manifesto")} aria-label="Rolar para o manifesto"><svg viewBox="0 0 18 48" fill="none" aria-hidden="true"><path d="M9 0v45M2.5 37.5 9 45l6.5-7.5" stroke="currentColor" strokeWidth="1.15" /></svg></button><span className="hero-edition">UPCYCLING & STREETWEAR<br />EST. NORDESTE</span></div>
@@ -127,7 +127,7 @@ export function StudioHome() {
           <SideMarks />
           <div className="manifesto-content">
             <Logo />
-            <h2 id="manifesto-title" aria-label="Um novo olhar sobre o que já existe.">{["UM NOVO OLHAR", "SOBRE O QUE", "JÁ EXISTE."].map((line) => <span className="manifesto-line" key={line} aria-hidden="true">{line.split(" ").map((word, index) => <span className="manifesto-word" key={`${word}-${index}`}>{word} </span>)}</span>)}</h2>
+            <h2 id="manifesto-title" aria-label={home.manifesto.join(" ")}>{home.manifesto.map((line) => <span className="manifesto-line" key={line} aria-hidden="true">{line.split(" ").map((word, index) => <span className="manifesto-word" key={`${word}-${index}`}>{word} </span>)}</span>)}</h2>
             <p>STG STUDIO™</p>
           </div>
           <SideMarks />
@@ -135,14 +135,14 @@ export function StudioHome() {
 
         <section ref={collection} id="colecoes" className="collection" aria-labelledby="collection-title">
           <div className={`collection-deck ${collectionHover !== null ? "has-highlight" : ""}`} onMouseLeave={() => setCollectionHover(null)}>
-            {collectionImages.map((item, index) => <div key={item.image} className={`collection-card ${collectionHover === index ? "is-highlighted" : collectionHover !== null ? "is-muted" : ""}`} style={collectionLayout(index)} tabIndex={0} aria-label={`${item.alt}. Passe o mouse ou use o foco para destacar.`} onMouseEnter={() => { setCollectionHover(index); setCollectionIndex(index); }} onFocus={() => { setCollectionHover(index); setCollectionIndex(index); }} onBlur={() => setCollectionHover(null)}>
+            {collectionImages.map((item, index) => <div key={index} className={`collection-card ${collectionHover === index ? "is-highlighted" : collectionHover !== null ? "is-muted" : ""}`} style={collectionLayout(index)} tabIndex={0} aria-label={`${item.alt}. Passe o mouse ou use o foco para destacar.`} onMouseEnter={() => { setCollectionHover(index); setCollectionIndex(index); }} onFocus={() => { setCollectionHover(index); setCollectionIndex(index); }} onBlur={() => setCollectionHover(null)}>
               <Image src={item.image} alt={item.alt} fill sizes="(min-width: 768px) 40vw, 30vw" className="object-cover" />
               <div className="collection-shade" />
             </div>)}
           </div>
-          <div className="collection-heading"><h2 id="collection-title">COLLECTION #001</h2><Link href="/shop" className="text-link">VER TUDO <Arrow /></Link></div>
+          <div className="collection-heading"><h2 id="collection-title">{home.collection.title}</h2><Link href="/shop" className="text-link">VER TUDO <Arrow /></Link></div>
           <div className="collection-bottom">
-            <div className="collection-counter"><span>0{collectionIndex + 1}</span><div className="collection-progress">{collectionImages.map((item, index) => <span className={index <= collectionIndex ? "filled" : ""} key={item.image} />)}</div><span>04</span></div>
+            <div className="collection-counter"><span>{String(collectionIndex + 1).padStart(2, "0")}</span><div className="collection-progress">{collectionImages.map((_, index) => <span className={index <= collectionIndex ? "filled" : ""} key={index} />)}</div><span>{String(collectionImages.length).padStart(2, "0")}</span></div>
             <button className="collection-caption" onClick={() => openProduct(collectionImages[collectionHover ?? collectionIndex].product)}><span key={collectionHover ?? collectionIndex}>{collectionImages[collectionHover ?? collectionIndex].caption}</span><Arrow diagonal /></button>
           </div>
         </section>
@@ -151,8 +151,8 @@ export function StudioHome() {
           <div className="studio-object"><div className="chrome-glow" /><ChromeLogo /></div>
           <div className="studio-copy">
             <Logo />
-            <h2 id="studio-title">CRIAMOS A PARTIR DO QUE VEMOS,<br className="desktop-break" /> SENTIMOS E REINTERPRETAMOS<br className="desktop-break" /> AO NOSSO REDOR.</h2>
-            <p className="studio-signature">— Renata Santiago, CEO.</p>
+            <h2 id="studio-title">{home.studio.quote.map((line, index) => <Fragment key={index}>{index > 0 && <><br className="desktop-break" /> </>}{line}</Fragment>)}</h2>
+            <p className="studio-signature">{home.studio.signature}</p>
           </div>
         </section>
 
@@ -169,7 +169,7 @@ export function StudioHome() {
           <span className="category-bottom-label">[ {String(categoryIndex + 1).padStart(2, "0")} / 05 ]</span>
         </section>
 
-        <section className="static-banner" aria-label="Textura de denim com a estrela STG"><Image src="/images/banner.webp" alt="Banner STG: estrela da marca sobre denim com textura gráfica reticulada" fill sizes="100vw" className="object-cover" /></section>
+        <section className="static-banner" aria-label="Textura de denim com a estrela STG"><Image src={home.banner.image} alt={home.banner.alt} fill sizes="100vw" className="object-cover" /></section>
       </main>
 
     </div>

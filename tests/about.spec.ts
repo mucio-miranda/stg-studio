@@ -61,8 +61,7 @@ test("about: mobile navigation, vertical timeline and shared cart", async ({ pag
   await page.getByRole("button", { name: "Fechar painel" }).click();
   await page.locator(".cart-link").click();
   await expect(page.locator(".saved-item")).toHaveCount(1);
-  await page.getByRole("button", { name: "FECHAR PEDIDO" }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toHaveText("Ainda estamos trabalhando nisso.");
+  await expect(page.getByRole("link", { name: "CONCLUIR COMPRA" })).toHaveAttribute("href", /^https:\/\/wa\.me\/5583996958338\?text=/);
 });
 
 test("about: keyboard access and server-rendered content", async ({ page, browser }) => {

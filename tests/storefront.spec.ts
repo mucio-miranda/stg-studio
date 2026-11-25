@@ -93,23 +93,12 @@ test("catalog, favorites and cart persist and dialogs restore focus", async ({ p
   await expect(page.getByText("PEÇAS COM OUTRAS HISTÓRIAS", { exact: true })).toHaveCount(0);
   await expect(page.locator(".selection-note")).toHaveCount(0);
   const selectionBeforeCheckout = await page.evaluate(() => localStorage.getItem("stg-selection-v1"));
-  const checkout = page.getByRole("button", { name: "FECHAR PEDIDO" });
-  await checkout.click();
-  const warning = page.getByRole("dialog").getByRole("alert");
-  await expect(warning).toHaveText("Ainda estamos trabalhando nisso.");
-  await expect(warning).toHaveCSS("background-color", "rgb(0, 0, 0)");
-  await expect(warning).toHaveCSS("color", "rgb(255, 255, 255)");
-  await expect.poll(async () => Math.round((await warning.boundingBox())!.y)).toBe(0);
-  expect(Math.round((await warning.boundingBox())!.width)).toBe(1440);
+  const checkout = page.getByRole("link", { name: "CONCLUIR COMPRA" });
+  await expect(checkout).toHaveAttribute("target", "_blank");
+  const order = new URL((await checkout.getAttribute("href"))!);
+  expect(order.origin + order.pathname).toBe("https://wa.me/5583996958338");
+  expect(order.searchParams.get("text")).toContain("1. Bolsa reconstruída (Bolsas)\n   Tamanho: Único\n   Valor: Sob consulta");
   expect(await page.evaluate(() => localStorage.getItem("stg-selection-v1"))).toBe(selectionBeforeCheckout);
-  await page.screenshot({ path: "/tmp/stg-checkout-warning-desktop.png" });
-  await warning.getByRole("button", { name: "Fechar aviso" }).click();
-  await expect(warning).toHaveCount(0);
-  await expect(checkout).toBeFocused();
-  await checkout.click();
-  await page.keyboard.press("Escape");
-  await expect(warning).toHaveCount(0);
-  await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Remover Bolsa reconstruída" }).click();
   await expect(page.getByText("Sua seleção está vazia.")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -254,7 +243,7 @@ test("missing pages: branded 404, original artwork and return home", async ({ pa
   expect((await request.get("/shop/peca-inexistente")).status()).toBe(404);
 });
 
-test("mobile: missing pages and checkout warning span the screen", async ({ page }) => {
+test("mobile: missing pages and checkout link", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.addInitScript(() => localStorage.setItem("stg-selection-v1", JSON.stringify({ cart: [{ id: "denim-eye", size: "A definir" }], favorites: [] })));
@@ -265,15 +254,9 @@ test("mobile: missing pages and checkout warning span the screen", async ({ page
   }
   await page.goto("/shop");
   await page.locator(".cart-link").click();
-  await page.getByRole("button", { name: "FECHAR PEDIDO" }).click();
-  const warning = page.getByRole("dialog").getByRole("alert");
-  await expect(warning).toHaveText("Ainda estamos trabalhando nisso.");
-  await expect.poll(async () => Math.round((await warning.boundingBox())!.y)).toBe(0);
-  const box = await warning.boundingBox();
-  expect(box!.x).toBe(0);
-  expect(box!.y).toBe(0);
-  expect(box!.width).toBe(390);
-  await page.screenshot({ path: "/tmp/stg-checkout-warning-mobile.png" });
-  await warning.getByRole("button", { name: "Fechar aviso" }).click();
+  const checkout = page.getByRole("link", { name: "CONCLUIR COMPRA" });
+  await expect(checkout).toBeVisible();
+  expect(await checkout.getAttribute("href")).toContain("https://wa.me/5583996958338?text=");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   await expect(page.locator(".saved-item")).toHaveCount(1);
 });

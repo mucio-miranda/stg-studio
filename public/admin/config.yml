@@ -1,0 +1,137 @@
+# Painel de conteúdo (Decap CMS). Cada "Publicar" grava um commit no GitHub e a Netlify publica o site de novo (1 a 3 min).
+# Login com GitHub: a conta precisa ter permissão de escrita no repositório.
+backend:
+  name: github
+  repo: mucio-miranda/stg-studio
+  branch: main
+  commit_messages:
+    update: "Conteúdo: atualiza {{collection}} / {{slug}}"
+    uploadMedia: "Conteúdo: envia {{path}}"
+    deleteMedia: "Conteúdo: remove {{path}}"
+
+# Em desenvolvimento, `npx decap-server` + `npm run dev` permite editar sem login (grava direto nos arquivos locais).
+local_backend: true
+
+locale: pt
+site_url: /
+display_url: /
+logo_url: /brand/logo.svg
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: loja
+    label: Loja
+    editor: { preview: false }
+    files:
+      - name: produtos
+        label: Produtos
+        file: content/products.json
+        fields:
+          - name: products
+            label: Produtos
+            label_singular: produto
+            widget: list
+            hint: A ordem da lista é a ordem do shop. Arraste para reordenar.
+            summary: "{{fields.name}} · {{fields.category}}"
+            fields:
+              - { name: name, label: Nome, widget: string }
+              - name: id
+                label: Código da peça
+                widget: string
+                pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Use só letras minúsculas, números e hífen (ex.: jaqueta-preta)"]
+                hint: Identifica a peça no carrinho e na home. Não altere depois de publicada.
+              - name: category
+                label: Categoria
+                widget: select
+                options: [Saias, Jaquetas, Calças, Acessórios, Bolsas]
+              - { name: image, label: Foto, widget: image, hint: "Vertical (3:4 ou 4:5), de preferência com 1200 px de largura ou mais." }
+              - name: position
+                label: Enquadramento da foto
+                widget: select
+                default: "50% 50%"
+                options:
+                  - { label: Centro, value: "50% 50%" }
+                  - { label: Topo, value: "50% 15%" }
+                  - { label: Base, value: "50% 85%" }
+                  - { label: Esquerda, value: "20% 50%" }
+                  - { label: Direita, value: "80% 50%" }
+              - { name: description, label: Descrição, widget: text }
+              - { name: price, label: "Preço (R$)", widget: number, value_type: float, min: 0, required: false, hint: "Deixe vazio para mostrar “Sob consulta”." }
+
+      - name: contato
+        label: WhatsApp e redes
+        file: content/settings.json
+        fields:
+          - name: whatsapp
+            label: WhatsApp que recebe os pedidos
+            widget: string
+            pattern: ['^\d{12,13}$', "Só números, com 55 e DDD (ex.: 5583996958338)"]
+          - { name: instagram, label: Link do Instagram, widget: string, required: false, hint: "Ex.: https://instagram.com/stgstudio. Vazio esconde o ícone." }
+          - { name: tiktok, label: Link do TikTok, widget: string, required: false, hint: Vazio esconde o ícone. }
+
+  - name: paginas
+    label: Páginas
+    editor: { preview: false }
+    files:
+      - name: home
+        label: Home
+        file: content/home.json
+        fields:
+          - name: hero
+            label: Abertura
+            widget: object
+            fields:
+              - { name: image, label: Foto de fundo, widget: image }
+              - { name: alt, label: Descrição da foto (acessibilidade), widget: string }
+              - { name: lines, label: Linhas do título, widget: list, field: { name: line, label: Linha, widget: string } }
+          - name: manifesto
+            label: Manifesto (linhas)
+            widget: list
+            field: { name: line, label: Linha, widget: string }
+          - name: collection
+            label: Coleção
+            widget: object
+            fields:
+              - { name: title, label: Título, widget: string }
+              - name: cards
+                label: Fotos da coleção
+                label_singular: foto
+                widget: list
+                min: 4
+                max: 4
+                hint: O layout tem exatamente 4 fotos.
+                summary: "{{fields.caption}}"
+                fields:
+                  - { name: image, label: Foto, widget: image }
+                  - { name: alt, label: Descrição da foto (acessibilidade), widget: string }
+                  - { name: caption, label: Legenda, widget: string }
+                  - name: product
+                    label: Peça que abre ao clicar
+                    widget: relation
+                    collection: loja
+                    file: produtos
+                    search_fields: ["products.*.name"]
+                    display_fields: ["products.*.name"]
+                    value_field: "products.*.id"
+          - name: studio
+            label: Frase da marca
+            widget: object
+            fields:
+              - { name: quote, label: Linhas da frase, widget: list, field: { name: line, label: Linha, widget: string } }
+              - { name: signature, label: Assinatura, widget: string }
+          - name: categories
+            label: Fotos das categorias
+            widget: object
+            fields:
+              - { name: saias, label: Saias, widget: image }
+              - { name: jaquetas, label: Jaquetas, widget: image }
+              - { name: calcas, label: Calças, widget: image }
+              - { name: acessorios, label: Acessórios, widget: image }
+              - { name: bolsas, label: Bolsas, widget: image }
+          - name: banner
+            label: Banner final
+            widget: object
+            fields:
+              - { name: image, label: Foto, widget: image }
+              - { name: alt, label: Descrição da foto (acessibilidade), widget: string }

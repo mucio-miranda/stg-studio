@@ -58,8 +58,6 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
   const [selected, setSelected] = useState<Product | null>(null);
   const [size, setSize] = useState("A definir");
   const [status, setStatus] = useState("");
-  const [checkoutWarning, setCheckoutWarning] = useState(false);
-  const checkoutButton = useRef<HTMLButtonElement>(null);
   const { cart, favorites, setCart, setFavorites } = useSelection();
 
   useEffect(() => {
@@ -79,7 +77,7 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
     };
   }, [panel]);
 
-  const closePanel = () => { setCheckoutWarning(false); setPanel(null); setSelected(null); setStatus(""); };
+  const closePanel = () => { setPanel(null); setSelected(null); setStatus(""); };
   const openPanel = (next: Panel, category: Category | "Tudo" = "Tudo") => {
     if (next === "shop") {
       closePanel();
@@ -87,13 +85,13 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
       return;
     }
     if (!panel) trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setCheckoutWarning(false); setSelected(null); setStatus(""); setPanel(next);
+    setSelected(null); setStatus(""); setPanel(next);
   };
   const openProduct = (id: string) => {
     const product = products.find((item) => item.id === id);
     if (!product) return;
     if (!panel) trigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setCheckoutWarning(false); setPanel("product"); setSelected(product); setSize("A definir"); setStatus("");
+    setPanel("product"); setSelected(product); setSize("A definir"); setStatus("");
   };
   const navigate = (id: string) => {
     closePanel();
@@ -109,9 +107,14 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
     if (!cart.some((item) => item.id === product.id && item.size === size)) setCart((items) => [...items, { id: product.id, size }]);
     setStatus("Peça adicionada à sua seleção.");
   };
-  const dismissCheckoutWarning = () => {
-    setCheckoutWarning(false);
-    checkoutButton.current?.focus({ preventScroll: true });
+  const checkoutHref = () => {
+    const items = cart.flatMap((item) => { const product = products.find((entry) => entry.id === item.id); return product ? [{ ...item, product }] : []; });
+    const priced = items.filter((item) => item.product.price !== null);
+    const total = priced.reduce((sum, item) => sum + (item.product.price ?? 0), 0);
+    const lines = items.map((item, index) => `${index + 1}. ${item.product.name} (${item.product.category})\n   Tamanho: ${item.size}\n   Valor: ${formatPrice(item.product.price)}`);
+    const summary = !priced.length ? [] : priced.length === items.length ? [`Total: ${formatPrice(total)}`] : [`Subtotal das peças com preço: ${formatPrice(total)} (as demais sob consulta)`];
+    const message = ["Olá, STG Studio! Quero concluir esta compra:", "", ...lines, "", ...summary, ...(summary.length ? [""] : []), "Pode me confirmar disponibilidade, prazo e frete?"].join("\n");
+    return `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(message)}`;
   };
 
   return (
@@ -129,12 +132,7 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
         {channels.length > 0 && <div className="social-links">{channels.map(([name, key]) => <a key={key} href={contact[key]} target="_blank" rel="noopener noreferrer" aria-label={`${name} da STG Studio`}><Image src={`/brand/${key}.svg`} alt="" width={24} height={24} /></a>)}</div>}
       </footer>}
 
-      <dialog ref={dialog} className={`studio-dialog ${panel === "menu" ? "menu-dialog" : ""}`} aria-labelledby="dialog-title" onCancel={(event) => { if (checkoutWarning) { event.preventDefault(); dismissCheckoutWarning(); } else closePanel(); }} onClick={(event) => { if (event.target === event.currentTarget) closePanel(); }}>
-        {checkoutWarning && <div className="checkout-warning" role="alert">
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><path d="m12 3 10 18H2L12 3Z" /><path d="M12 9v5m0 2v1" /></svg>
-          <p>Ainda estamos trabalhando nisso.</p>
-          <button className="close-button" aria-label="Fechar aviso" onClick={dismissCheckoutWarning}><span /><span /></button>
-        </div>}
+      <dialog ref={dialog} className={`studio-dialog ${panel === "menu" ? "menu-dialog" : ""}`} aria-labelledby="dialog-title" onCancel={closePanel} onClick={(event) => { if (event.target === event.currentTarget) closePanel(); }}>
         <div className="dialog-surface">
           <div className="dialog-header"><Logo /><button className="close-button" aria-label="Fechar painel" onClick={closePanel}><span /><span /></button></div>
           <div className="dialog-body">
@@ -147,7 +145,7 @@ export function StorefrontShellClient({ children, page, products, contact }: { c
 
             {panel === "cart" && <>
               <h2 id="dialog-title" className="dialog-title">Sua seleção <sup>({cart.length})</sup></h2>
-              {cart.length === 0 ? <div className="empty-state"><p>Sua seleção está vazia.</p><button className="solid-button" onClick={() => openPanel("shop")}>EXPLORAR A COLEÇÃO <Arrow /></button></div> : <><div className="saved-list">{cart.map((item) => { const product = products.find((entry) => entry.id === item.id); if (!product) return null; return <article key={`${item.id}-${item.size}`} className="saved-item"><button className="saved-image" onClick={() => openProduct(product.id)} aria-label={`Ver ${product.name}`}><Image src={product.image} alt={product.name} fill sizes="110px" className="object-cover" /></button><div><span className="overline">{product.category}</span><h3>{product.name}</h3><p>Tamanho de preferência: {item.size}</p><p>{formatPrice(product.price)}</p></div><button className="remove-button" aria-label={`Remover ${product.name}`} onClick={() => { setCart((items) => items.filter((entry) => entry.id !== item.id || entry.size !== item.size)); setStatus(""); }}>REMOVER</button></article>; })}</div><button ref={checkoutButton} className="solid-button checkout-button" onClick={() => setCheckoutWarning(true)}>FECHAR PEDIDO <Arrow diagonal /></button></>}
+              {cart.length === 0 ? <div className="empty-state"><p>Sua seleção está vazia.</p><button className="solid-button" onClick={() => openPanel("shop")}>EXPLORAR A COLEÇÃO <Arrow /></button></div> : <><div className="saved-list">{cart.map((item) => { const product = products.find((entry) => entry.id === item.id); if (!product) return null; return <article key={`${item.id}-${item.size}`} className="saved-item"><button className="saved-image" onClick={() => openProduct(product.id)} aria-label={`Ver ${product.name}`}><Image src={product.image} alt={product.name} fill sizes="110px" className="object-cover" /></button><div><span className="overline">{product.category}</span><h3>{product.name}</h3><p>Tamanho de preferência: {item.size}</p><p>{formatPrice(product.price)}</p></div><button className="remove-button" aria-label={`Remover ${product.name}`} onClick={() => { setCart((items) => items.filter((entry) => entry.id !== item.id || entry.size !== item.size)); setStatus(""); }}>REMOVER</button></article>; })}</div><a className="solid-button checkout-button" href={checkoutHref()} target="_blank" rel="noopener noreferrer">CONCLUIR COMPRA <Arrow diagonal /></a><p className="detail-note">Você vai para o WhatsApp da STG com o pedido pronto para enviar.</p></>}
             </>}
 
             <p className="status-message" role="status" aria-live="polite">{status}</p>

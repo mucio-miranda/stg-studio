@@ -25,8 +25,7 @@ test("collections: banner, navigation, shop and shared cart", async ({ page }) =
   await expect(page.locator(".collection-entry")).toBeVisible();
   await page.locator(".cart-link").click();
   await expect(page.locator(".saved-item")).toHaveCount(1);
-  await page.getByRole("button", { name: "FECHAR PEDIDO" }).click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toHaveText("Ainda estamos trabalhando nisso.");
+  await expect(page.getByRole("link", { name: "CONCLUIR COMPRA" })).toHaveAttribute("href", /^https:\/\/wa\.me\/5583996958338\?text=/);
   expect(errors).toEqual([]);
 });
 

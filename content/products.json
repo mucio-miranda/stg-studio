@@ -1,0 +1,9 @@
+{
+  "products": [
+    { "id": "denim-rework", "name": "Denim rework", "category": "Saias", "image": "/images/collection-01.webp", "position": "50% 50%", "description": "Texturas, recortes e novas possibilidades para o denim. Uma leitura do universo da Collection #001.", "price": null },
+    { "id": "jacket-studs", "name": "Jaqueta de atitude", "category": "Jaquetas", "image": "/images/collection-04.webp", "position": "50% 50%", "description": "O encontro entre o jeans e o metal. Detalhes que transformam a forma de vestir.", "price": null },
+    { "id": "denim-eye", "name": "Denim, outro olhar", "category": "Calças", "image": "/images/collection-03.webp", "position": "50% 50%", "description": "Linhas conhecidas, novos sentidos. O olhar STG encontra o denim do dia a dia.", "price": null },
+    { "id": "silver-eye", "name": "Olhar de prata", "category": "Acessórios", "image": "/images/collection-02.webp", "position": "50% 50%", "description": "Um detalhe que diz tudo. A estrela e o olho da STG em uma composição de metal e textura.", "price": null },
+    { "id": "bag-reconstructed", "name": "Bolsa reconstruída", "category": "Bolsas", "image": "/images/bag.webp", "position": "50% 50%", "description": "Fragmentos que encontram uma nova forma. Uma bolsa com a linguagem da reconstrução.", "price": null }
+  ]
+}

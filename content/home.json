@@ -1,0 +1,32 @@
+{
+  "hero": {
+    "image": "/images/hero.webp",
+    "alt": "Colagem editorial da STG Studio com recortes de jeans, texturas e acessórios",
+    "lines": ["STG STUDIO™", "COLLECTION #001", "NORDESTE, BRAZIL"]
+  },
+  "manifesto": ["UM NOVO OLHAR", "SOBRE O QUE", "JÁ EXISTE."],
+  "collection": {
+    "title": "COLLECTION #001",
+    "cards": [
+      { "image": "/images/collection-01.webp", "alt": "Editorial STG: modelo com peça de denim desfiado", "caption": "RECONSTRUIR", "product": "denim-rework" },
+      { "image": "/images/collection-02.webp", "alt": "Editorial STG: detalhe de acessório metálico em forma de estrela", "caption": "RESSIGNIFICAR", "product": "silver-eye" },
+      { "image": "/images/collection-03.webp", "alt": "Editorial STG: jeans com detalhe do olho da marca", "caption": "REINTERPRETAR", "product": "denim-eye" },
+      { "image": "/images/collection-04.webp", "alt": "Editorial STG: textura de denim escuro com aplicações metálicas", "caption": "REEXISTIR", "product": "jacket-studs" }
+    ]
+  },
+  "studio": {
+    "quote": ["CRIAMOS A PARTIR DO QUE VEMOS,", "SENTIMOS E REINTERPRETAMOS", "AO NOSSO REDOR."],
+    "signature": "— Renata Santiago, CEO."
+  },
+  "categories": {
+    "saias": "/images/collection-01.webp",
+    "jaquetas": "/images/collection-04.webp",
+    "calcas": "/images/collection-03.webp",
+    "acessorios": "/images/collection-02.webp",
+    "bolsas": "/images/bag.webp"
+  },
+  "banner": {
+    "image": "/images/banner.webp",
+    "alt": "Banner STG: estrela da marca sobre denim com textura gráfica reticulada"
+  }
+}

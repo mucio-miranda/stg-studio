@@ -1,16 +1,26 @@
-// Camada de dados do frontend. Hoje serve conteúdo estático; o backend foi removido e será refeito.
+// Camada de dados do frontend. Produtos, home e contato vêm de content/*.json, editados no CMS (/admin).
 // Ao reconectar um backend, mantenha estas assinaturas e troque só a origem dos dados.
-import type { Product } from "./catalog";
+import { categories, type Category, type GarmentModel, type Product } from "./catalog";
 import type { Unit } from "./digital-passport";
 import type { MagazinePost } from "./magazine";
+import catalog from "../../content/products.json";
+import settings from "../../content/settings.json";
 
-const products: Product[] = [
-  { id: "denim-rework", name: "Denim rework", category: "Saias", image: "/images/collection-01.webp", position: "50% 50%", description: "Texturas, recortes e novas possibilidades para o denim. Uma leitura do universo da Collection #001.", price: null, serialPrefix: "DR", model: "skirt", sort: 1 },
-  { id: "jacket-studs", name: "Jaqueta de atitude", category: "Jaquetas", image: "/images/collection-04.webp", position: "50% 50%", description: "O encontro entre o jeans e o metal. Detalhes que transformam a forma de vestir.", price: null, serialPrefix: "JA", model: "jacket", sort: 2 },
-  { id: "denim-eye", name: "Denim, outro olhar", category: "Calças", image: "/images/collection-03.webp", position: "50% 50%", description: "Linhas conhecidas, novos sentidos. O olhar STG encontra o denim do dia a dia.", price: null, serialPrefix: "DO", model: "pants", sort: 3 },
-  { id: "silver-eye", name: "Olhar de prata", category: "Acessórios", image: "/images/collection-02.webp", position: "50% 50%", description: "Um detalhe que diz tudo. A estrela e o olho da STG em uma composição de metal e textura.", price: null, serialPrefix: "OP", model: "pendant", sort: 4 },
-  { id: "bag-reconstructed", name: "Bolsa reconstruída", category: "Bolsas", image: "/images/bag.webp", position: "50% 50%", description: "Fragmentos que encontram uma nova forma. Uma bolsa com a linguagem da reconstrução.", price: null, serialPrefix: "BR", model: "bag", sort: 5 },
-];
+const categoryModels: Record<Category, GarmentModel> = { Saias: "skirt", Jaquetas: "jacket", Calças: "pants", Acessórios: "pendant", Bolsas: "bag" };
+type ProductEntry = { id: string; name: string; category: string; image: string; position?: string; description?: string; price?: number | string | null };
+
+// The CMS list order is the shop order. Entries with an unknown category or no photo are skipped instead of breaking the build.
+const products: Product[] = (catalog.products as ProductEntry[]).flatMap((entry, index) => {
+  const category = categories.find((item) => item === entry.category);
+  if (!entry.id || !entry.name || !entry.image || !category) return [];
+  const price = entry.price === null || entry.price === undefined || entry.price === "" ? null : Number(entry.price);
+  const initials = entry.name.normalize("NFD").replace(/[^A-Za-z\s]/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0].toUpperCase()).join("");
+  return [{
+    id: entry.id, name: entry.name, category, image: entry.image, position: entry.position || "50% 50%",
+    description: entry.description ?? "", price: Number.isFinite(price) ? price : null,
+    serialPrefix: initials || "ST", model: categoryModels[category], sort: index + 1,
+  }];
+});
 const posts: MagazinePost[] = [];
 
 export async function getProducts(): Promise<Product[]> { return products; }
@@ -35,8 +45,12 @@ const brand: BrandProfile = {
 };
 export async function getBrandProfile(): Promise<BrandProfile> { return brand; }
 
-export type Contact = { instagram: string; tiktok: string; whatsapp: string };
-export async function getContact(): Promise<Contact> { return { instagram: "", tiktok: "", whatsapp: "" }; }
+// whatsapp is the wa.me link shown in the footer; whatsappNumber receives the cart order.
+export type Contact = { instagram: string; tiktok: string; whatsapp: string; whatsappNumber: string };
+export async function getContact(): Promise<Contact> {
+  const whatsappNumber = settings.whatsapp.replace(/\D/g, "");
+  return { instagram: settings.instagram.trim(), tiktok: settings.tiktok.trim(), whatsapp: whatsappNumber ? `https://wa.me/${whatsappNumber}` : "", whatsappNumber };
+}
 
 export async function getMagazinePosts(): Promise<MagazinePost[]> { return posts; }
 export async function getMagazinePost(slug: string): Promise<MagazinePost | null> { return posts.find((post) => post.slug === slug) ?? null; }
