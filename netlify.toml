@@ -4,3 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Runtime do Next.js na Netlify (SSR, imagens e rewrites como /admin).
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
