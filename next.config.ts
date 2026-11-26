@@ -4,9 +4,9 @@ const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
   poweredByHeader: false,
   devIndicators: false,
-  // Painel do Decap CMS (public/admin/index.html).
-  async rewrites() {
-    return [{ source: "/admin", destination: "/admin/index.html" }];
+  // Painel de conteúdo: Pages CMS (configurado em .pages.yml).
+  async redirects() {
+    return [{ source: "/admin", destination: "https://app.pagescms.org/", permanent: false }];
   },
   experimental: {
     agentUpgrade: "security",

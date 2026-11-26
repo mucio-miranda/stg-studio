@@ -1,4 +1,4 @@
-// Camada de dados do frontend. Produtos, home e contato vêm de content/*.json, editados no CMS (/admin).
+// Camada de dados do frontend. Produtos, home e contato vêm de content/*.json, editados no Pages CMS (/admin).
 // Ao reconectar um backend, mantenha estas assinaturas e troque só a origem dos dados.
 import { categories, type Category, type GarmentModel, type Product } from "./catalog";
 import type { Unit } from "./digital-passport";
@@ -10,7 +10,7 @@ const categoryModels: Record<Category, GarmentModel> = { Saias: "skirt", Jaqueta
 type ProductEntry = { id: string; name: string; category: string; image: string; position?: string; description?: string; price?: number | string | null };
 
 // The CMS list order is the shop order. Entries with an unknown category or no photo are skipped instead of breaking the build.
-const products: Product[] = (catalog.products as ProductEntry[]).flatMap((entry, index) => {
+const products: Product[] = (catalog as ProductEntry[]).flatMap((entry, index) => {
   const category = categories.find((item) => item === entry.category);
   if (!entry.id || !entry.name || !entry.image || !category) return [];
   const price = entry.price === null || entry.price === undefined || entry.price === "" ? null : Number(entry.price);
@@ -48,8 +48,10 @@ export async function getBrandProfile(): Promise<BrandProfile> { return brand; }
 // whatsapp is the wa.me link shown in the footer; whatsappNumber receives the cart order.
 export type Contact = { instagram: string; tiktok: string; whatsapp: string; whatsappNumber: string };
 export async function getContact(): Promise<Contact> {
-  const whatsappNumber = settings.whatsapp.replace(/\D/g, "");
-  return { instagram: settings.instagram.trim(), tiktok: settings.tiktok.trim(), whatsapp: whatsappNumber ? `https://wa.me/${whatsappNumber}` : "", whatsappNumber };
+  // The CMS may save an empty field as null or drop it.
+  const { whatsapp, instagram, tiktok } = settings as Partial<Record<"whatsapp" | "instagram" | "tiktok", string | null>>;
+  const whatsappNumber = (whatsapp ?? "").replace(/\D/g, "");
+  return { instagram: (instagram ?? "").trim(), tiktok: (tiktok ?? "").trim(), whatsapp: whatsappNumber ? `https://wa.me/${whatsappNumber}` : "", whatsappNumber };
 }
 
 export async function getMagazinePosts(): Promise<MagazinePost[]> { return posts; }

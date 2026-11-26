@@ -1,0 +1,156 @@
+# Painel de conteúdo (Pages CMS, https://app.pagescms.org). Cada edição salva grava um commit em main
+# e a Netlify publica o site de novo (1 a 3 min). A equipe da STG entra por e-mail (colaboradores).
+
+media:
+  input: public/images
+  output: /images
+  categories: [image]
+  rename: safe
+
+settings:
+  commit:
+    identity: app
+    templates:
+      create: "Conteúdo: cria {path} (Pages CMS)"
+      update: "Conteúdo: atualiza {path} (Pages CMS)"
+      delete: "Conteúdo: remove {path} (Pages CMS)"
+      rename: "Conteúdo: renomeia {oldPath} para {newPath} (Pages CMS)"
+
+content:
+  - name: produtos
+    label: Produtos
+    type: file
+    path: content/products.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Nome
+        type: string
+        required: true
+      - name: id
+        label: Código da peça
+        type: string
+        required: true
+        description: "Identifica a peça no carrinho e na home. Só letras minúsculas, números e hífen (ex.: jaqueta-preta). Não altere depois de publicada."
+        pattern:
+          regex: "^[a-z0-9]+(-[a-z0-9]+)*$"
+          message: "Use só letras minúsculas, números e hífen (ex.: jaqueta-preta)"
+      - name: category
+        label: Categoria
+        type: select
+        required: true
+        options:
+          values: [Saias, Jaquetas, Calças, Acessórios, Bolsas]
+      - name: image
+        label: Foto
+        type: image
+        required: true
+        description: "Vertical (3:4 ou 4:5), de preferência com 1200 px de largura ou mais."
+      - name: position
+        label: Enquadramento da foto
+        type: select
+        description: "Qual parte da foto fica visível quando ela é cortada. Vazio = Centro."
+        options:
+          values:
+            - { name: "50% 50%", label: Centro }
+            - { name: "50% 15%", label: Topo }
+            - { name: "50% 85%", label: Base }
+            - { name: "20% 50%", label: Esquerda }
+            - { name: "80% 50%", label: Direita }
+      - name: description
+        label: Descrição
+        type: text
+      - name: price
+        label: "Preço (R$)"
+        type: number
+        description: "Deixe vazio para mostrar “Sob consulta”."
+        options:
+          min: 0
+
+  - name: home
+    label: Home
+    type: file
+    path: content/home.json
+    format: json
+    fields:
+      - name: hero
+        label: Abertura
+        type: object
+        fields:
+          - { name: image, label: Foto de fundo, type: image, required: true }
+          - { name: alt, label: Descrição da foto (acessibilidade), type: string }
+          - { name: lines, label: Linhas do título, type: string, list: true }
+      - name: manifesto
+        label: Manifesto (linhas)
+        type: string
+        list: true
+      - name: collection
+        label: Coleção
+        type: object
+        fields:
+          - { name: title, label: Título, type: string }
+          - name: cards
+            label: Fotos da coleção
+            description: O layout tem exatamente 4 fotos.
+            type: object
+            list:
+              min: 4
+              max: 4
+              collapsible:
+                collapsed: true
+                summary: "{index}. {caption}"
+            fields:
+              - { name: image, label: Foto, type: image, required: true }
+              - { name: alt, label: Descrição da foto (acessibilidade), type: string }
+              - { name: caption, label: Legenda, type: string }
+              - name: product
+                label: Peça que abre ao clicar
+                type: string
+                description: "O código da peça, igual ao campo “Código da peça” em Produtos (ex.: denim-rework)."
+                pattern:
+                  regex: "^[a-z0-9]+(-[a-z0-9]+)*$"
+                  message: "Use o código da peça (letras minúsculas, números e hífen)"
+      - name: studio
+        label: Frase da marca
+        type: object
+        fields:
+          - { name: quote, label: Linhas da frase, type: string, list: true }
+          - { name: signature, label: Assinatura, type: string }
+      - name: categories
+        label: Fotos das categorias
+        type: object
+        fields:
+          - { name: saias, label: Saias, type: image, required: true }
+          - { name: jaquetas, label: Jaquetas, type: image, required: true }
+          - { name: calcas, label: Calças, type: image, required: true }
+          - { name: acessorios, label: Acessórios, type: image, required: true }
+          - { name: bolsas, label: Bolsas, type: image, required: true }
+      - name: banner
+        label: Banner final
+        type: object
+        fields:
+          - { name: image, label: Foto, type: image, required: true }
+          - { name: alt, label: Descrição da foto (acessibilidade), type: string }
+
+  - name: contato
+    label: WhatsApp e redes
+    type: file
+    path: content/settings.json
+    format: json
+    fields:
+      - name: whatsapp
+        label: WhatsApp que recebe os pedidos
+        type: string
+        required: true
+        pattern:
+          regex: "^\\d{12,13}$"
+          message: "Só números, com 55 e DDD (ex.: 5583996958338)"
+      - name: instagram
+        label: Link do Instagram
+        type: string
+        description: "Ex.: https://instagram.com/stgstudio. Vazio esconde o ícone."
+      - name: tiktok
+        label: Link do TikTok
+        type: string
+        description: Vazio esconde o ícone.

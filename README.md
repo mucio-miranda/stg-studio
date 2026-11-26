@@ -2,7 +2,7 @@
 
 Home editorial de upcycling / streetwear, baseada no [layout STG — Antagon no Figma](https://www.figma.com/design/qrGVqUHoO8iIQb7UoFRtTz/STG---Antagon?node-id=2-143).
 
-Next.js 16, React 19, Tailwind 4, GSAP e Three.js, hospedado na Netlify. Produtos, fotos e títulos da home e o WhatsApp de pedidos são editados no painel `/admin` (Decap CMS).
+Next.js 16, React 19, Tailwind 4, GSAP e Three.js, hospedado na Netlify. Produtos, fotos e títulos da home e o WhatsApp de pedidos são editados no painel `/admin` (Pages CMS).
 
 ## Executar
 
@@ -35,17 +35,19 @@ Os testes usam o Google Chrome instalado (`channel` em `playwright.config.ts`). 
 
 ## Painel de conteúdo (`/admin`)
 
-O painel é o [Decap CMS](https://decapcms.org/) (`public/admin/`). Ele edita três arquivos versionados:
+O painel é o [Pages CMS](https://pagescms.org/) hospedado (`app.pagescms.org`); `/admin` no site redireciona para lá. Os campos estão em `.pages.yml` e editam três arquivos versionados:
 
 | Arquivo | Conteúdo |
 |---|---|
 | `content/products.json` | Produtos do shop: nome, código, categoria, foto, enquadramento, descrição e preço (vazio = "Sob consulta"). A ordem da lista é a ordem do shop. |
-| `content/home.json` | Home: foto e linhas da abertura, manifesto, título e 4 fotos da coleção, frase da marca, fotos das categorias e banner. |
+| `content/home.json` | Home: foto e linhas da abertura, manifesto, título e 4 fotos da coleção (cada uma ligada ao código de uma peça), frase da marca, fotos das categorias e banner. |
 | `content/settings.json` | WhatsApp que recebe os pedidos (só números, com 55 e DDD), Instagram e TikTok. |
 
-Cada "Publicar" no painel grava um commit em `main` no GitHub; a Netlify publica de novo em 1 a 3 minutos. Fotos enviadas ficam em `public/uploads/`. O login é pela conta do GitHub, que precisa ter permissão de escrita no repositório (OAuth do GitHub configurado na Netlify em *Project configuration > Access & security > OAuth*).
+Cada edição salva grava um commit em `main` pelo app do Pages CMS; a Netlify publica de novo em 1 a 3 minutos. Fotos enviadas pelo painel ficam em `public/images/`.
 
-Para editar localmente sem login: `npx decap-server` em um terminal, `npm run dev` em outro e abrir `http://localhost:3001/admin`. As mudanças vão direto para os arquivos de `content/`.
+Acesso:
+- Dono do repositório: entra em `app.pagescms.org` com o GitHub; o app "Pages CMS" precisa estar instalado no repositório.
+- Equipe da STG: entra **por e-mail**, sem conta no GitHub. É convidada como colaboradora no próprio Pages CMS (os convites ficam no banco do Pages CMS, não no repositório). Colaboradores editam conteúdo e fotos, mas não mudam `.pages.yml` nem convidam outras pessoas.
 
 ## Carrinho e pedidos
 
@@ -73,6 +75,6 @@ As fotos editoriais da coleção têm aproximadamente 620 × 830 px; troque por 
 - `src/components/storefront*.tsx`, `shop-catalog.tsx`: estrutura da loja, painéis e catálogo.
 - `src/app/globals.css`: tokens, composição e adaptações responsivas.
 - `src/lib/catalog.ts`: categorias, tipos e conteúdo da home (de `content/home.json`).
-- `content/`: conteúdo editado pelo painel; `public/admin/config.yml`: campos do painel.
+- `content/`: conteúdo editado pelo painel; `.pages.yml`: campos do painel.
 - `public/`: assets exportados (veja `public/ASSETS.md`) e fonte General Sans.
 - `tests/`: Playwright (storefront, coleções, magazine, sobre, UI mínima).

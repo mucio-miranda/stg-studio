@@ -17,7 +17,7 @@ export function shopHref(category: Category | "Tudo" = "Tudo") {
   return category === "Tudo" ? "/shop" : `/shop?categoria=${encodeURIComponent(category)}`;
 }
 
-// Home editorial art direction, edited in the CMS (/admin) and stored in content/home.json.
+// Home editorial art direction, edited in Pages CMS (/admin) and stored in content/home.json.
 export const home = homeContent;
 export const collectionImages = home.collection.cards;
 export const categoryImages: Record<Category, string> = { Saias: home.categories.saias, Jaquetas: home.categories.jaquetas, Calças: home.categories.calcas, Acessórios: home.categories.acessorios, Bolsas: home.categories.bolsas };
