@@ -7,5 +7,13 @@
     "position": "50% 50%",
     "description": "Peça única. Desenvolvida manualmente através de técnicas autorais de reconstrução no atelier STG. Cada intervenção respeita a história da matéria e transforma sua estrutura em uma nova narrativa. Nenhuma reprodução será produzida.",
     "price": 155
+  },
+  {
+    "name": "Mini Skirt",
+    "id": "denim-rework2",
+    "category": "Saias",
+    "image": "/images/a1d7a891-4cb6-494b-bef6-892decbf1ade.jpeg",
+    "position": "50% 50%",
+    "price": 199
   }
 ]
