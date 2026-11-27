@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import { categories, formatPrice, type Category } from "@/lib/catalog";
 import { useSelection } from "@/lib/use-selection";
+import { Arrow } from "./brand";
 import { useStorefront } from "./storefront-shell";
 
 type Control = "search" | "category" | "filters";
@@ -150,7 +151,7 @@ export function ShopCatalog() {
           <button className="shop-product-link" onClick={() => openProduct(product.id)} aria-label={`Ver ${product.name}`}>
             <div className="shop-product-image">
               <Image src={product.image} alt={product.name} fill sizes="(max-width: 767px) 46vw, 30vw" loading={index < 3 ? "eager" : "lazy"} className="object-cover" style={{ objectPosition: product.position }} />
-              <span className="shop-product-arrow" aria-hidden="true">↗</span>
+              <span className="shop-product-arrow" aria-hidden="true"><Arrow diagonal /></span>
             </div>
             <div className="shop-product-meta"><h2>{product.name}</h2><p>{formatPrice(product.price)}</p></div>
           </button>
