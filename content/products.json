@@ -7,37 +7,5 @@
     "position": "50% 50%",
     "description": "Peça única. Desenvolvida manualmente através de técnicas autorais de reconstrução no atelier STG. Cada intervenção respeita a história da matéria e transforma sua estrutura em uma nova narrativa. Nenhuma reprodução será produzida.",
     "price": 155
-  },
-  {
-    "name": "Jaqueta de atitude",
-    "id": "jacket-studs",
-    "category": "Jaquetas",
-    "image": "/images/collection-04.webp",
-    "position": "50% 50%",
-    "description": "O encontro entre o jeans e o metal. Detalhes que transformam a forma de vestir."
-  },
-  {
-    "name": "Denim, outro olhar",
-    "id": "denim-eye",
-    "category": "Calças",
-    "image": "/images/collection-03.webp",
-    "position": "50% 50%",
-    "description": "Linhas conhecidas, novos sentidos. O olhar STG encontra o denim do dia a dia."
-  },
-  {
-    "name": "Olhar de prata",
-    "id": "silver-eye",
-    "category": "Acessórios",
-    "image": "/images/collection-02.webp",
-    "position": "50% 50%",
-    "description": "Um detalhe que diz tudo. A estrela e o olho da STG em uma composição de metal e textura."
-  },
-  {
-    "name": "Bolsa reconstruída",
-    "id": "bag-reconstructed",
-    "category": "Bolsas",
-    "image": "/images/bag.webp",
-    "position": "50% 50%",
-    "description": "Fragmentos que encontram uma nova forma. Uma bolsa com a linguagem da reconstrução."
   }
 ]
