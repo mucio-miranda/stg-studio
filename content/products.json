@@ -15,5 +15,13 @@
     "image": "/images/a1d7a891-4cb6-494b-bef6-892decbf1ade.jpeg",
     "position": "50% 50%",
     "price": 199
+  },
+  {
+    "name": "Dress Denim",
+    "id": "denim-rework3",
+    "category": "Jaquetas",
+    "image": "/images/193368ef-7d37-4940-b4ae-d51ba9bba3db.jpeg",
+    "position": "50% 50%",
+    "price": 195
   }
 ]
